@@ -5,6 +5,7 @@ import persistence.UsuarioDAO;
 
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,10 +20,12 @@ import transferobject.UsuarioTO;
 @RequestMapping("usuario") //esta será la url para invocar el controlador
 @Controller
 public class UsuarioController {
-    @RequestMapping(method=RequestMethod.GET) //Método que hace posible llamar al controlador al estilo localhost/proyecto/invitacion.htm
+    @RequestMapping(method=RequestMethod.POST) //Método que hace posible llamar al controlador al estilo localhost/proyecto/invitacion.htm
     public String derivar(
             HttpServletRequest request, 
             @RequestParam("action") String action,
+            @RequestParam(value="email", required=false) String email, 
+            @RequestParam(value="password", required=false) String password,
             ModelMap  model){
         
         String selected =action; //acción que vendrá en la URL
@@ -58,6 +61,14 @@ public class UsuarioController {
                 return "listAll";
             }
             case "menu":{
+                return "index";
+            }
+            case "login":{
+                return ProcesaLogin(request,email,password);
+            }
+            case "logout":{
+                HttpSession session = request.getSession();
+                session.setAttribute("usuario", null);
                 return "index";
             }
             default:{
@@ -103,5 +114,28 @@ public class UsuarioController {
         return "resultadobusqueda";
         
     }//FIN FUNCION PRUEBA
+    
+    public String ProcesaLogin(
+        HttpServletRequest request, 
+        String email, 
+        String password){
+        UsuarioTO envia = new UsuarioTO();
+        envia.setMail(email);
+        envia.setPassword(password);
+        UsuarioDAO cst = new UsuarioDAO();
+        if(cst.Login(envia)){
+            //Logea
+            envia = cst.dataUSuario(envia);
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", envia);
+            return("index");
+        }else{
+            //Datos inválidos
+            return("fail_login");
+        }
+
+        
+        
+    }
     
 }

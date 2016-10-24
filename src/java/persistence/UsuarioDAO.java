@@ -21,13 +21,15 @@ public class UsuarioDAO {
     public static final String READ_ALL = "SELECT * FROM invited;";
     public static final String SEARCH_QUERY = "SELECT * FROM invited WHERE (name LIKE ?) OR run LIKE ?;";
     public static final String DELETE_QUERY = "DELETE FROM invited WHERE id = ?;";
+    public static final String LOGIN_QUERY = "SELECT COUNT(*) AS RESULTADO FROM usuario WHERE mail = ? AND password = ?";
+    public static final String DATOS_USUARIO_QUERY = "SELECT * FROM usuario WHERE mail = ? AND password = ?";
     
     //BASE DE DATOS LOCAL
-    private static final String DB_NAME="party";
+    private static final String DB_NAME="weboo";
     private static final String PORT="3306";
-    private static final String URL="jdbc:mysql://127.0.0.1:"+PORT+"/"+DB_NAME;    
-    private static final String USER="root";
-    private static final String PASSWORD="";
+    private static final String URL="jdbc:mysql://192.95.15.145:"+PORT+"/"+DB_NAME;    
+    private static final String USER="weboo";
+    private static final String PASSWORD="123abc";
     
     //BASE DE DATOS REMOTA
     //private static final String URL="jdbc:mysql://192.168.70.2:"+PORT+"/"+DB_NAME;    
@@ -87,6 +89,50 @@ public class UsuarioDAO {
         }
         
         return list;
+    }
+    
+    public boolean Login(UsuarioTO data){
+        Connection conn = null;
+        try {
+            conn = getConnection();
+            PreparedStatement ps = conn.prepareStatement(LOGIN_QUERY);
+            //System.out.println("Email: " + data.getMail());
+            ps.setString(1, data.getMail());
+            ps.setString(2, data.getPassword());
+            //System.out.println(ps);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            if(Integer.parseInt(rs.getString("RESULTADO")) == 1){
+                return true;
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+    
+    public UsuarioTO dataUSuario(UsuarioTO recibe){
+        UsuarioTO data = new UsuarioTO();
+        try {
+            Connection conn = null;
+            conn = getConnection();
+            PreparedStatement ps = conn.prepareStatement(DATOS_USUARIO_QUERY);
+            ps.setString(1, recibe.getMail());
+            ps.setString(2, recibe.getPassword());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            data.setIdUsuario(rs.getInt("idUsuario"));
+            data.setNombre(rs.getString("nombre"));
+            data.setApellidos(rs.getString("apellidos"));
+            data.setMail(rs.getString("mail"));
+            data.setPassword(rs.getString("password"));
+            data.setFoto(rs.getString("foto"));
+            return data;
+        } catch (SQLException ex) {
+            Logger.getLogger(UsuarioDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     public LinkedList<UsuarioTO> readAll() throws SQLException{

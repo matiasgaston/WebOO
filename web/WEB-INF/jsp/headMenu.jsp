@@ -52,34 +52,46 @@
                 </ul>
               </li>
               <li><a href="contact.html">CONTACTO</a></li>
-            </ul><a href="#" data-toggle="modal" data-target="#login-modal" class="btn navbar-btn btn-ghost"><i class="fa fa-sign-in"></i>Iniciar Sesión</a>
+              
+            </ul>
+              <%
+                    if(session.getAttribute("usuario") == null){
+                %>
+              <a href="#" data-toggle="modal" data-target="#login-modal" class="btn navbar-btn btn-ghost"><i class="fa fa-sign-in"></i>Iniciar Sesión</a>
+              <% }else{ %>
+              <a href="#" class="btn navbar-btn btn-ghost" onclick="document.getElementById('LogoutForm').submit()"><i class="fa fa-sign-in"></i>Cerrar Sesión</a>
+              <% } %>
           </div>
         </div>
       </div>
     </header>
     <!-- *** LOGIN MODAL ***_________________________________________________________
     -->
+    <form action="usuario.htm" method="POST" id="LogoutForm">
+                  <input type="hidden" name="action" value="logout">
+              </form>
     <div id="login-modal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true" class="modal fade">
       <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" data-dismiss="modal" aria-hidden="true" class="close">×</button>
-            <h4 id="Login" class="modal-title">Customer login</h4>
+            <h4 id="Login" class="modal-title">Ingresar Sistema</h4>
           </div>
           <div class="modal-body">
-            <form action="customer-orders.html" method="post">
+            <form action="usuario.htm" method="POST">
+                <input type="hidden" name="action" value="login">
               <div class="form-group">
-                <input id="email_modal" type="text" placeholder="email" class="form-control">
+                <input id="email_modal" type="email" name="email" placeholder="correo" class="form-control">
               </div>
               <div class="form-group">
-                <input id="password_modal" type="password" placeholder="password" class="form-control">
+                <input id="password_modal" type="password" name="password" placeholder="password" class="form-control">
               </div>
               <p class="text-center">
-                <button type="button" class="btn btn-primary"><i class="fa fa-sign-in"></i> Log in</button>
+                <button type="submit" class="btn btn-primary"><i class="fa fa-sign-in"></i> Login</button>
               </p>
             </form>
-            <p class="text-center text-muted">Not registered yet?</p>
-            <p class="text-center text-muted"><a href="#"><strong>Register now</strong></a>! It is easy and done in 1 minute and gives you access to special discounts and much more!</p>
+            <p class="text-center text-muted">¿Sin Cuenta?</p>
+            <p class="text-center text-muted"><a href="#"><strong>Cree su cuenta ahora</strong></a>! Es fácil, en menos de 1 minuto podrá completar el formulario!</p>
           </div>
         </div>
       </div>
